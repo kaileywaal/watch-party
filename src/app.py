@@ -1,24 +1,15 @@
-#!/usr/bin/env python3
-
-from flask import Flask, request
-from flask import render_template
+from flask import Flask, request, render_template
 
 app = Flask(__name__)
 
-@app.route("/")
+
+@app.route("/", methods=["GET", "POST"])
 def main():
-    return '''
-    <h1>Hey, there!</h1>
-    <p>What is your name?</p>
-     <form action="/echo_user_input" method="POST">
-         <input name="user_input">
-         <input type="submit" value="Submit!">
-     </form>
-     '''
+    if request.method == "GET":
+        return render_template("index.html")
+    elif request.method == "POST":
+        return render_template("greet.html", name=request.form.get("name", "world"))
 
-@app.route("/echo_user_input", methods=["POST"])
-def echo_input():
 
-    name_input_text = request.form.get("user_input", "")
-    return render_template('hello_world.html', name=name_input_text)
-# "You entered: " + name_input_text
+if __name__ == "__main__":
+    app.run(debug=True)
