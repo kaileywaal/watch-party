@@ -11,5 +11,5 @@ def main():
         return render_template("greet.html", name=request.form.get("name", "world"))
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# if __name__ == "__main__":
+#     app.run(debug=True)
