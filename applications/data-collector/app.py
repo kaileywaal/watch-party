@@ -1,111 +1,112 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import requests
-from dotenv import load_dotenv
-import os
+
+# https://open-meteo.com/en/docs/historical-weather-api/#start_date=2024-01-01&end_date=2024-04-08&hourly=sunshine_duration&daily=temperature_2m_max,temperature_2m_min,daylight_duration,sunshine_duration,precipitation_sum,rain_sum,snowfall_sum,precipitation_hours&location_mode=csv_coordinates&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch
 
 app = Flask(__name__)
-# Configuring the database URI for SQLite
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///comments.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///weather.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
-# Load environment variables from .env file
-load_dotenv()
-YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY")
+
+SUPERIOR_CO_LATITUDE = 52.52
+SUPERIOR_CO_LONGITUDE = 13.41
+API_URL = (
+    "https://archive-api.open-meteo.com/v1/archive?latitude="
+    + str(SUPERIOR_CO_LATITUDE)
+    + "&longitude="
+    + str(SUPERIOR_CO_LONGITUDE)
+    + "&start_date=2024-01-01&end_date=2024-04-08&daily=sunshine_duration&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch"
+)
 
 
-# Define a model for the "Video" table
-class Video(db.Model):
+class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    video_id = db.Column(db.String(100), nullable=False)
+    location_name = db.Column(db.String(100), nullable=False)
+    longitude = db.Column(db.Numeric(precision=100, scale=2))
+    latitude = db.Column(db.Numeric(precision=100, scale=2))
 
 
-# Define a model for the "Comment" table
-class Comment(db.Model):
+class Weather(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    comment_id = db.Column(db.String(100), nullable=False)
-    video_id = db.Column(db.String(100), nullable=False)
-    text = db.Column(db.String(1000), nullable=False)
-    author = db.Column(db.String(50), nullable=False)
+    location_id = db.Column(db.Integer, db.ForeignKey("location.id"), nullable=False)
+    date = db.Column(db.String, nullable=False)
+    sunshine_duration = db.Column(db.Numeric(precision=10000, scale=2))
 
 
-# Creating the table(s) in the database (if they don't already exist)
+# Create the table(s) in the database (if they don't already exist)
 with app.app_context():
     db.create_all()
 
 
 @app.route("/test")
 def test_app():
-    print("test successful")
-    return "test successful"
+    response = requests.get(API_URL).json()
 
-
-@app.route("/add_video", methods=["POST"])
-def add_video():
-    """Add data for a video and its associated comments"""
-    data = request.get_json()
-    video_id = data["video_id"]
-
-    new_video = Video(video_id=video_id)
-    db.session.add(new_video)
-    db.session.commit()
-
-    get_comments_by_video_id(video_id)
-
-    return jsonify({"message": "Video added successfully"}), 201
-
-
-def get_comments_by_video_id(video_id):
-    """Retrieve comments from a particular video by its ID"""
-    url = (
-        "https://www.googleapis.com/youtube/v3/commentThreads?key="
-        + YOUTUBE_API_KEY
-        + "&part=id,snippet&videoId="
-        + video_id
+    result_count = len(response["daily"]["time"])
+    location_id = get_location_id_by_coordinates(
+        response["latitude"], response["longitude"]
     )
-    response = requests.get(url)
-    if response.status_code == 200:
-        data = response.json()
-        comments = data["items"]
 
-        for comment in comments:
-            comment_id = comment["id"]
-            text = comment["snippet"]["topLevelComment"]["snippet"]["textOriginal"]
-            author = comment["snippet"]["topLevelComment"]["snippet"][
-                "authorDisplayName"
-            ]
-            success = add_comment(comment_id, video_id, text, author)
-            print(success)
+    if not location_id:
+        # add the locaiton here because the weather API slightly alters the latitude and longitude values once called
+        location_id = add_location(
+            location_name="Superior, CO",
+            longitude=response["latitude"],
+            latitude=response["longitude"],
+        )
+
+    for result in range(result_count):
+        date = response["daily"]["time"][result]
+        sunshine_duration = response["daily"]["sunshine_duration"][result]
+
+        new_weather = Weather(
+            date=date, sunshine_duration=sunshine_duration, location_id=location_id
+        )
+        db.session.add(new_weather)
+        db.session.commit()
+        print(new_weather)
+
+    return response
+
+
+def add_location(latitude, longitude, location_name):
+    """Add a location value to the database by latitude and longitude"""
+    new_location = Location(
+        location_name=location_name, longitude=longitude, latitude=latitude
+    )
+    db.session.add(new_location)
+    db.session.commit()
+    return new_location.id
+
+
+def get_location_id_by_coordinates(latitude, longitude):
+    """Query the Location table for the record with matching latitude and longitude"""
+    location = (
+        db.session.query(Location)
+        .filter_by(latitude=latitude, longitude=longitude)
+        .first()
+    )
+
+    if location:
+        return location.id
     else:
-        # Print an error message if the request failed
-        print(f"Error: {response.status_code}")
+        return None
 
 
-def add_comment(comment_id, video_id, text, author):
-    """Add comment to database"""
-    new_comment = Comment(
-        comment_id=comment_id, video_id=video_id, text=text, author=author
-    )
-    db.session.add(new_comment)
-    db.session.commit()
-
-    return jsonify({"message": "Comment added successfully"}), 201
-
-
-@app.route("/comments", methods=["GET"])
-def get_comments():
-    comments = Comment.query.all()
+@app.route("/getWeatherData")
+def get_weather():
+    weather = Weather.query.all()
     return jsonify(
         [
             {
-                "id": comment.id,
-                "comment_id": comment.comment_id,
-                "video_id": comment.video_id,
-                "text": comment.text,
-                "author": comment.author,
+                "id": item.id,
+                "location_id": item.location_id,
+                "date": item.date,
+                "sunshine_duration": item.sunshine_duration,
             }
-            for comment in comments
+            for item in weather
         ]
     )
 
