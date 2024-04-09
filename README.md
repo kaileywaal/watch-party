@@ -23,3 +23,11 @@ if __name__ == "__main__":
 ```
 Python applications/web-application/src/app.py
 ```
+
+# Data Collector Instructions
+
+To run:
+
+```
+Python applications/data-collector/app.py
+```
