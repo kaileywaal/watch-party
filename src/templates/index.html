@@ -1,0 +1,20 @@
+{% extends "layout.html" %} 
+
+{% block body %}
+
+  <form action="/submit_location" method="get" id="location-form">
+      <label for="location">Select a location:</label>
+      <select name="location" id="location" onchange="submitForm()">
+          {% for location in locations %}
+              <option value="{{ location.id }}">{{ location.name }}</option>
+          {% endfor %}
+      </select>
+  </form>
+
+   <script>
+        function submitForm() {
+            document.getElementById("location-form").submit();
+        }
+    </script>
+
+{% endblock %}
