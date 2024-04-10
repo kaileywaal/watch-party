@@ -2,19 +2,21 @@
 
 {% block body %}
 
-  <form action="/submit_location" method="get" id="location-form">
+  <form action="/get-weather-data" method="post" id="location-form">
       <label for="location">Select a location:</label>
-      <select name="location" id="location" onchange="submitForm()">
+      <select name="location" id="location">
           {% for location in locations %}
-              <option value="{{ location.id }}">{{ location.name }}</option>
+              <option value="{{ location }}">{{ location.name }}</option>
           {% endfor %}
       </select>
+      <button type="submit">Submit</button>
   </form>
 
+{# 
    <script>
         function submitForm() {
             document.getElementById("location-form").submit();
         }
-    </script>
+    </script> #}
 
 {% endblock %}
