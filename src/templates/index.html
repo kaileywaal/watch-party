@@ -3,8 +3,13 @@
 {% block body %}
 
   <form action="/get-weather-data" method="post" id="location-form">
-      <label for="location">Select a location:</label>
-      <select name="location" id="location">
+      <label for="location">Select two locations to compare:</label>
+      <select name="location1" id="location1">
+          {% for location in locations %}
+              <option value="{{ location.id }}">{{ location.location_name }}</option>
+          {% endfor %}
+      </select>
+      <select name="location2" id="location2">
           {% for location in locations %}
               <option value="{{ location.id }}">{{ location.location_name }}</option>
           {% endfor %}
