@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, Column, Integer, String, Numeric, ForeignKey
 from sqlalchemy.orm import declarative_base, sessionmaker
 from dotenv import load_dotenv
-import os
+import os, json
 
 
 load_dotenv()
@@ -35,6 +35,17 @@ def setup_schema():
     Base.metadata.create_all(engine)
 
     # TODO: add logic here to add initial data to the database
+    locations_file_path = os.path.join("src", "data", "locations.json")
+    with open(locations_file_path, "r") as f:
+        locations = json.load(f)
+        for location_data in locations:
+            location = Location(
+                location_name=location_data["name"],
+                longitude=location_data["longitude"],
+                latitude=location_data["latitude"],
+            )
+            session.add(location)
+        session.commit()
 
 
 if __name__ == "__main__":

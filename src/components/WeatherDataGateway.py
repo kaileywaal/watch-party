@@ -15,6 +15,17 @@ class WeatherDataGateway:
 
     def add_data(self, date, sunshine_duration, location_id, daylight_duration):
         try:
+            existing_data = (
+                self.session.query(Weather)
+                .filter_by(date=date, location_id=location_id)
+                .first()
+            )
+            if existing_data:
+                print(
+                    f"Data for location {location_id} on date {date} already exists. Skipping..."
+                )
+                return None  # Skip adding the data
+
             weather = Weather(
                 date=date,
                 sunshine_duration=sunshine_duration,
@@ -23,6 +34,9 @@ class WeatherDataGateway:
             )
             self.session.add(weather)
             self.session.commit()
+            print(
+                print(f"Added weather data for location {location_id} on date {date}.")
+            )
             return weather.id
         except Exception as e:
             print("Error:", e)

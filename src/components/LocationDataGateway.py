@@ -62,7 +62,6 @@ class LocationDataGateway:
             return None
 
     def get_location_id_by_coordinates(self, latitude, longitude):
-        """Query the Location table for the record with matching latitude and longitude"""
         location = (
             self.session.query(Location)
             .filter_by(latitude=latitude, longitude=longitude)

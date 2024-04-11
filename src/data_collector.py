@@ -25,30 +25,6 @@ location_gateway = LocationDataGateway(os.getenv("DB_PATH"))
 weather_gateway = WeatherDataGateway(os.getenv("DB_PATH"))
 
 
-# def add_location(latitude, longitude, location_name):
-#     """Add a location value to the database by latitude and longitude and return ID of newly created location"""
-#     new_location = Location(
-#         location_name=location_name, longitude=longitude, latitude=latitude
-#     )
-#     session.add(new_location)
-#     session.commit()
-#     return new_location.id
-
-
-# def get_location_id_by_coordinates(latitude, longitude):
-#     """Query the Location table for the record with matching latitude and longitude"""
-#     location = (
-#         session.query(Location)
-#         .filter_by(latitude=latitude, longitude=longitude)
-#         .first()
-#     )
-
-#     if location:
-#         return location.id
-#     else:
-#         return None
-
-
 def collect_weather_data_for_location(location_id):
     """Collect weather data from the API and store it in the database"""
 
@@ -63,18 +39,20 @@ def collect_weather_data_for_location(location_id):
         + "&start_date=2024-01-01&end_date=2024-04-08&daily=sunshine_duration,daylight_duration&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch"
     )
 
-    response = requests.get(API_URL).json()
+    try:
+        response = requests.get(API_URL).json()
+        result_count = len(response["daily"]["time"])
 
-    result_count = len(response["daily"]["time"])
+        for result in range(result_count):
+            date = response["daily"]["time"][result]
+            sunshine_duration = response["daily"]["sunshine_duration"][result]
+            daylight_duration = response["daily"]["daylight_duration"][result]
 
-    for result in range(result_count):
-        date = response["daily"]["time"][result]
-        sunshine_duration = response["daily"]["sunshine_duration"][result]
-        daylight_duration = response["daily"]["daylight_duration"][result]
-
-        weather_gateway.add_data(
-            date, sunshine_duration, location_id, daylight_duration
-        )
+            weather_gateway.add_data(
+                date, sunshine_duration, location_id, daylight_duration
+            )
+    except Exception as e:
+        print("Error collecting data:", e)
 
 
 if __name__ == "__main__":
