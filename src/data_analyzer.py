@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from data_collector import Weather, Location  # Import your SQLAlchemy models
+from data_collector import Weather  # Import your SQLAlchemy models
+from components.LocationDataGateway import Location
 
 # Create an engine to connect to the SQLite database
 engine = create_engine("sqlite:///weather.db")

@@ -1,12 +1,15 @@
 import requests
 from sqlalchemy import create_engine, Column, Integer, String, Numeric, ForeignKey
 from sqlalchemy.orm import declarative_base, sessionmaker
+from components.LocationDataGateway import LocationDataGateway
 
 # SQLAlchemy setup
-engine = create_engine("sqlite:///weather.db")
-Base = declarative_base()
-Session = sessionmaker(bind=engine)
-session = Session()
+DB_PATH = "sqlite:///weather.db"
+
+# engine = create_engine(DB_PATH)
+# Base = declarative_base()
+# Session = sessionmaker(bind=engine)
+# session = Session()
 
 # API constants
 SUPERIOR_CO_LATITUDE = 52.52
@@ -21,49 +24,51 @@ API_URL = (
 
 
 # SQLAlchemy models
-class Location(Base):
-    __tablename__ = "location"
-    id = Column(Integer, primary_key=True)
-    location_name = Column(String(100), nullable=False)
-    longitude = Column(Numeric(precision=100, scale=2))
-    latitude = Column(Numeric(precision=100, scale=2))
+# class Location(Base):
+#     __tablename__ = "location"
+#     id = Column(Integer, primary_key=True)
+#     location_name = Column(String(100), nullable=False)
+#     longitude = Column(Numeric(precision=100, scale=2))
+#     latitude = Column(Numeric(precision=100, scale=2))
+
+location_gateway = LocationDataGateway(DB_PATH)
 
 
-class Weather(Base):
-    __tablename__ = "weather"
-    id = Column(Integer, primary_key=True)
-    location_id = Column(Integer, ForeignKey("location.id"), nullable=False)
-    date = Column(String, nullable=False)
-    sunshine_duration = Column(Numeric(precision=10000, scale=2), nullable=False)
-    daylight_duration = Column(Numeric(precision=10000, scale=2), nullable=False)
+# class Weather(Base):
+#     __tablename__ = "weather"
+#     id = Column(Integer, primary_key=True)
+#     location_id = Column(Integer, ForeignKey("location.id"), nullable=False)
+#     date = Column(String, nullable=False)
+#     sunshine_duration = Column(Numeric(precision=10000, scale=2), nullable=False)
+#     daylight_duration = Column(Numeric(precision=10000, scale=2), nullable=False)
 
 
 # Create tables
-Base.metadata.create_all(engine)
+# Base.metadata.create_all(engine)
 
 
-def add_location(latitude, longitude, location_name):
-    """Add a location value to the database by latitude and longitude and return ID of newly created location"""
-    new_location = Location(
-        location_name=location_name, longitude=longitude, latitude=latitude
-    )
-    session.add(new_location)
-    session.commit()
-    return new_location.id
+# def add_location(latitude, longitude, location_name):
+#     """Add a location value to the database by latitude and longitude and return ID of newly created location"""
+#     new_location = Location(
+#         location_name=location_name, longitude=longitude, latitude=latitude
+#     )
+#     session.add(new_location)
+#     session.commit()
+#     return new_location.id
 
 
-def get_location_id_by_coordinates(latitude, longitude):
-    """Query the Location table for the record with matching latitude and longitude"""
-    location = (
-        session.query(Location)
-        .filter_by(latitude=latitude, longitude=longitude)
-        .first()
-    )
+# def get_location_id_by_coordinates(latitude, longitude):
+#     """Query the Location table for the record with matching latitude and longitude"""
+#     location = (
+#         session.query(Location)
+#         .filter_by(latitude=latitude, longitude=longitude)
+#         .first()
+#     )
 
-    if location:
-        return location.id
-    else:
-        return None
+#     if location:
+#         return location.id
+#     else:
+#         return None
 
 
 def collect_weather_data():
@@ -72,47 +77,46 @@ def collect_weather_data():
     response = requests.get(API_URL).json()
 
     result_count = len(response["daily"]["time"])
-    location_id = get_location_id_by_coordinates(
+    location_id = location_gateway.get_location_id_by_coordinates(
         response["latitude"], response["longitude"]
     )
 
     if not location_id:
-        location_id = add_location(
-            location_name="Superior, CO",
-            longitude=response["latitude"],
-            latitude=response["longitude"],
+        location_id = location_gateway.add_location(
+            "Superior, CO", response["latitude"], response["longitude"]
         )
 
-    for result in range(result_count):
-        date = response["daily"]["time"][result]
-        sunshine_duration = response["daily"]["sunshine_duration"][result]
-        daylight_duration = response["daily"]["daylight_duration"][result]
+    # for result in range(result_count):
+    #     date = response["daily"]["time"][result]
+    #     sunshine_duration = response["daily"]["sunshine_duration"][result]
+    #     daylight_duration = response["daily"]["daylight_duration"][result]
 
-        if daylight_duration is not None and sunshine_duration is not None:
-            new_weather = Weather(
-                date=date,
-                sunshine_duration=sunshine_duration,
-                location_id=location_id,
-                daylight_duration=daylight_duration,
-            )
-            session.add(new_weather)
-            session.commit()
+    #     if daylight_duration is not None and sunshine_duration is not None:
+    #         new_weather = Weather(
+    #             date=date,
+    #             sunshine_duration=sunshine_duration,
+    #             location_id=location_id,
+    #             daylight_duration=daylight_duration,
+    #         )
+    #         session.add(new_weather)
+    #         session.commit()
 
 
-def get_weather_data():
-    """Retrieve all weather data from the database"""
-    weather = session.query(Weather).all()
-    return [
-        {
-            "id": item.id,
-            "location_id": item.location_id,
-            "date": item.date,
-            "sunshine_duration": item.sunshine_duration,
-            "daylight_duration": item.daylight_duration,
-        }
-        for item in weather
-    ]
+# def get_weather_data():
+#     """Retrieve all weather data from the database"""
+#     weather = session.query(Weather).all()
+#     return [
+#         {
+#             "id": item.id,
+#             "location_id": item.location_id,
+#             "date": item.date,
+#             "sunshine_duration": item.sunshine_duration,
+#             "daylight_duration": item.daylight_duration,
+#         }
+#         for item in weather
+#     ]
 
 
 if __name__ == "__main__":
-    collect_weather_data()  # Collect weather data when the script is run
+    # collect_weather_data()  # Collect weather data when the script is run
+    print(location_gateway.get_location_list())
