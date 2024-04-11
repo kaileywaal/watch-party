@@ -2,14 +2,12 @@ import requests
 from sqlalchemy import create_engine, Column, Integer, String, Numeric, ForeignKey
 from sqlalchemy.orm import declarative_base, sessionmaker
 from components.LocationDataGateway import LocationDataGateway
+from components.WeatherDataGateway import WeatherDataGateway
+from dotenv import load_dotenv
+import os
 
-# SQLAlchemy setup
-DB_PATH = "sqlite:///weather.db"
 
-# engine = create_engine(DB_PATH)
-# Base = declarative_base()
-# Session = sessionmaker(bind=engine)
-# session = Session()
+load_dotenv()
 
 # API constants
 SUPERIOR_CO_LATITUDE = 52.52
@@ -23,28 +21,8 @@ API_URL = (
 )
 
 
-# SQLAlchemy models
-# class Location(Base):
-#     __tablename__ = "location"
-#     id = Column(Integer, primary_key=True)
-#     location_name = Column(String(100), nullable=False)
-#     longitude = Column(Numeric(precision=100, scale=2))
-#     latitude = Column(Numeric(precision=100, scale=2))
-
-location_gateway = LocationDataGateway(DB_PATH)
-
-
-# class Weather(Base):
-#     __tablename__ = "weather"
-#     id = Column(Integer, primary_key=True)
-#     location_id = Column(Integer, ForeignKey("location.id"), nullable=False)
-#     date = Column(String, nullable=False)
-#     sunshine_duration = Column(Numeric(precision=10000, scale=2), nullable=False)
-#     daylight_duration = Column(Numeric(precision=10000, scale=2), nullable=False)
-
-
-# Create tables
-# Base.metadata.create_all(engine)
+location_gateway = LocationDataGateway(os.getenv("DB_PATH"))
+weather_gateway = WeatherDataGateway(os.getenv("DB_PATH"))
 
 
 # def add_location(latitude, longitude, location_name):
@@ -86,20 +64,14 @@ def collect_weather_data():
             "Superior, CO", response["latitude"], response["longitude"]
         )
 
-    # for result in range(result_count):
-    #     date = response["daily"]["time"][result]
-    #     sunshine_duration = response["daily"]["sunshine_duration"][result]
-    #     daylight_duration = response["daily"]["daylight_duration"][result]
+    for result in range(result_count):
+        date = response["daily"]["time"][result]
+        sunshine_duration = response["daily"]["sunshine_duration"][result]
+        daylight_duration = response["daily"]["daylight_duration"][result]
 
-    #     if daylight_duration is not None and sunshine_duration is not None:
-    #         new_weather = Weather(
-    #             date=date,
-    #             sunshine_duration=sunshine_duration,
-    #             location_id=location_id,
-    #             daylight_duration=daylight_duration,
-    #         )
-    #         session.add(new_weather)
-    #         session.commit()
+        weather_gateway.add_data(
+            date, sunshine_duration, location_id, daylight_duration
+        )
 
 
 # def get_weather_data():
@@ -118,5 +90,6 @@ def collect_weather_data():
 
 
 if __name__ == "__main__":
-    # collect_weather_data()  # Collect weather data when the script is run
+    collect_weather_data()  # Collect weather data when the script is run
     print(location_gateway.get_location_list())
+    print(weather_gateway.get_all_weather_data())

@@ -1,15 +1,8 @@
 from sqlalchemy import create_engine, Column, Integer, String, Numeric
 from sqlalchemy.orm import declarative_base, sessionmaker
+from schema_setup import Location
 
 Base = declarative_base()
-
-
-class Location(Base):
-    __tablename__ = "location"
-    id = Column(Integer, primary_key=True)
-    location_name = Column(String(100), nullable=False)
-    longitude = Column(Numeric(precision=100, scale=2))
-    latitude = Column(Numeric(precision=100, scale=2))
 
 
 class LocationDataGateway:
