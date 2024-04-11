@@ -47,51 +47,20 @@ class WeatherDataGateway:
             self.session.rollback()
             return None
 
-    # def get_location_list(self):
-    #     try:
-    #         locations = self.session.query(Location).all()
-    #         if locations:
-    #             return [
-    #                 {
-    #                     "id": location.id,
-    #                     "location_name": location.location_name,
-    #                     "longitude": location.longitude,
-    #                     "latitude": location.latitude,
-    #                 }
-    #                 for location in locations
-    #             ]
-
-    #     except Exception as e:
-    #         print("Error:", e)
-    #         return None
-
-    # def get_location_by_id(self, location_id):
-    #     try:
-    #         location = (
-    #             self.session.query(Location).filter(Location.id == location_id).first()
-    #         )
-    #         if location:
-    #             return {
-    #                 "id": location.id,
-    #                 "location_name": location.location_name,
-    #                 "longitude": location.longitude,
-    #                 "latitude": location.latitude,
-    #             }
-    #         else:
-    #             return None
-    #     except Exception as e:
-    #         print("Error:", e)
-    #         return None
-
-    # def get_location_id_by_coordinates(self, latitude, longitude):
-    #     """Query the Location table for the record with matching latitude and longitude"""
-    #     location = (
-    #         self.session.query(Location)
-    #         .filter_by(latitude=latitude, longitude=longitude)
-    #         .first()
-    #     )
-
-    #     if location:
-    #         return location.id
-    #     else:
-    #         return None
+    def get_weather_data_by_location(self, location_id):
+        try:
+            weather = self.session.query(Weather).filter_by(location_id=location_id)
+            return [
+                {
+                    "id": item.id,
+                    "location_id": item.location_id,
+                    "date": item.date,
+                    "sunshine_duration": item.sunshine_duration,
+                    "daylight_duration": item.daylight_duration,
+                }
+                for item in weather
+            ]
+        except Exception as e:
+            print("Error:", e)
+            self.session.rollback()
+            return None
