@@ -1,1 +1,1 @@
-web: gunicorn applications.web-application.app:app
+web: gunicorn src:app
