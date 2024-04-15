@@ -1,5 +1,4 @@
 from flask import Flask, request, render_template
-from data_analyzer import analyze_weather_data
 from data_collector import collect_weather_data_for_location
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
