@@ -1,11 +1,11 @@
 from flask import Flask, request, render_template
-from data_collector import collect_weather_data_for_location
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 import os
-from components.LocationDataGateway import LocationDataGateway
-from components.WeatherDataGateway import WeatherDataGateway
-from components.SunshineRatioDataGateway import SunshineRatioDataGateway
+from src.data_collector import collect_weather_data_for_location
+from src.components.LocationDataGateway import LocationDataGateway
+from src.components.WeatherDataGateway import WeatherDataGateway
+from src.components.SunshineRatioDataGateway import SunshineRatioDataGateway
 
 
 load_dotenv()

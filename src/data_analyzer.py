@@ -1,8 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from components.WeatherDataGateway import WeatherDataGateway
-from components.SunshineRatioDataGateway import SunshineRatioDataGateway
-from components.WeatherDataGateway import WeatherDataGateway
+from src.components.WeatherDataGateway import WeatherDataGateway
+from src.components.SunshineRatioDataGateway import SunshineRatioDataGateway
+from src.components.WeatherDataGateway import WeatherDataGateway
 import os
 
 # Create an engine to connect to the SQLite databasex
