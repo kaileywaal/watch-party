@@ -1,10 +1,6 @@
-from sqlalchemy import create_engine, Column, Integer, String, Numeric, ForeignKey
-from sqlalchemy.orm import declarative_base, sessionmaker, relationship
-from schema_setup import SunshineRatio
-from sqlalchemy import join
-from sqlalchemy.orm import aliased, joinedload
-from schema_setup import Weather, Location
-import json
+from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
+from schema_setup import SunshineRatio, Weather, Location
 
 
 Base = declarative_base()
