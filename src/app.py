@@ -25,29 +25,25 @@ def main():
 @app.route("/get-weather-data", methods=["POST"])
 def get_data_for_location():
     location_1_id = request.form["location1"]
-    # location_1_name = location_gateway.get_location_by_id(location_1_id)[
-    #     "location_name"
-    # ]
+
+    # TODO: automate data collection apart from this request
     collect_weather_data_for_location(location_1_id, get_formatted_date())
-    # location_1_analyzed_weather = analyze_weather_data(location_1_weather)
+    location_1_analyzed_weather = (
+        sunshine_ratio_gateway.get_sunshine_ratio_data_by_location(location_1_id)
+    )
 
-    # location_2_id = request.form["location2"]
-    # location_2_name = location_gateway.get_location_by_id(location_2_id)[
-    #     "location_name"
-    # ]
-    # location_2_weather = collect_weather_data_for_location(location_2_id)
-    # location_2_analyzed_weather = analyze_weather_data(location_2_weather)
+    location_2_id = request.form["location2"]
+    # TODO: automate data collection apart from this request
+    collect_weather_data_for_location(location_2_id, get_formatted_date())
+    location_2_analyzed_weather = (
+        sunshine_ratio_gateway.get_sunshine_ratio_data_by_location(location_2_id)
+    )
 
-    print(sunshine_ratio_gateway.get_all_sunshine_ratio_data())
-    return sunshine_ratio_gateway.get_sunshine_ratio_data_by_location(location_1_id)
-    return location_1_id
-    # return render_template(
-    #     "weather-data.html",
-    #     location_1_name=location_1_name,
-    #     location_1_analyzed_weather=location_1_analyzed_weather,
-    #     # location_2_name=location_2_name,
-    #     # location_2_analyzed_weather=location_2_analyzed_weather,
-    # )
+    return render_template(
+        "weather-data.html",
+        location_1_analyzed_weather=location_1_analyzed_weather,
+        location_2_analyzed_weather=location_2_analyzed_weather,
+    )
 
 
 def get_formatted_date():

@@ -44,15 +44,6 @@ def analyze_weather_data():
 def get_sunshine_to_daylight_ratio(weather):
     return weather["sunshine_duration"] / weather["daylight_duration"]
 
-    # return [
-    #     {
-    #         "date": item["date"],
-    #         "percent_sunny_of_possible_time": item["sunshine_duration"]
-    #         / item["daylight_duration"],
-    #     }
-    #     for item in weather_data
-    # ]
-
 
 if __name__ == "__main__":
     print("Running analysis")

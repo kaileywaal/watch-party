@@ -5,16 +5,16 @@
         <thead>
             <tr>
                 <th>Date</th>
-                <th>{{location_1_name}}</th>
-                <th>{{location_2_name}}</th>
+                <th>{{location_1_analyzed_weather[0].location_name}}</th>
+                <th>{{location_2_analyzed_weather[0].location_name}}</th>
             </tr>
         </thead>
         <tbody>
             {% for weather in location_1_analyzed_weather %}
             <tr>
                 <td>{{ weather.date }}</td>
-                <td {% if weather.percent_sunny_of_possible_time > location_2_analyzed_weather[loop.index0].percent_sunny_of_possible_time %}class="highlight"{% endif %}>{{ weather.percent_sunny_of_possible_time }}</td>
-                <td {% if weather.percent_sunny_of_possible_time < location_2_analyzed_weather[loop.index0].percent_sunny_of_possible_time %}class="highlight"{% endif %}>{{ location_2_analyzed_weather[loop.index0].percent_sunny_of_possible_time }}</td>
+                <td {% if weather.sunshine_to_daylight_ratio > location_2_analyzed_weather[loop.index0].sunshine_to_daylight_ratio %}class="highlight"{% endif %}>{{ weather.sunshine_to_daylight_ratio }}</td>
+                <td {% if weather.sunshine_to_daylight_ratio < location_2_analyzed_weather[loop.index0].sunshine_to_daylight_ratio %}class="highlight"{% endif %}>{{ location_2_analyzed_weather[loop.index0].sunshine_to_daylight_ratio }}</td>
             </tr>
             {% endfor %}
         </tbody>
