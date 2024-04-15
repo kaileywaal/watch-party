@@ -3,7 +3,6 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 from dotenv import load_dotenv
 import os, json
 
-
 load_dotenv()
 
 engine = create_engine(os.getenv("DB_PATH"))

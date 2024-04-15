@@ -1,7 +1,6 @@
 import requests
 from components.LocationDataGateway import LocationDataGateway, Location
 from components.WeatherDataGateway import WeatherDataGateway
-from components.SunshineRatioDataGateway import SunshineRatioDataGateway
 from dotenv import load_dotenv
 from data_analyzer import analyze_weather_data
 import os

@@ -3,7 +3,7 @@
 ## To run the web application locally:
 
 ```
-export FLASK_APP=applications/web-application/src/app.py
+export FLASK_APP=src/app.py
 flask run
 ```
 
@@ -11,7 +11,7 @@ flask run
 
 Note: running in debug mode will allow the appication to reload when saving changes without having to restart the server.
 
-1. Add this to the applications/web-application/src/app.py file (if it is not already there)
+1. Add this to the src/app.py file (if it is not already there)
 
 ```
 if __name__ == "__main__":
@@ -21,13 +21,5 @@ if __name__ == "__main__":
 2. From the root directory, run the app with the following command:
 
 ```
-Python applications/web-application/src/app.py
-```
-
-# Data Collector Instructions
-
-To run:
-
-```
-Python applications/data-collector/app.py
+Python src/app.py
 ```
