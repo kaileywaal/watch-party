@@ -4,13 +4,17 @@ from components.WeatherDataGateway import WeatherDataGateway
 from data_analyzer import analyze_weather_data
 from data_collector import collect_weather_data_for_location
 from dotenv import load_dotenv
+from datetime import datetime, timedelta
 import os
+from components.SunshineRatioDataGateway import SunshineRatioDataGateway
+
 
 load_dotenv()
 
 app = Flask(__name__)
 location_gateway = LocationDataGateway(os.getenv("DB_PATH"))
 weather_gateway = WeatherDataGateway(os.getenv("DB_PATH"))
+sunshine_ratio_gateway = SunshineRatioDataGateway(os.getenv("DB_PATH"))
 
 
 @app.route("/")
@@ -21,26 +25,34 @@ def main():
 @app.route("/get-weather-data", methods=["POST"])
 def get_data_for_location():
     location_1_id = request.form["location1"]
-    location_1_name = location_gateway.get_location_by_id(location_1_id)[
-        "location_name"
-    ]
-    location_1_weather = collect_weather_data_for_location(location_1_id)
-    location_1_analyzed_weather = analyze_weather_data(location_1_weather)
+    # location_1_name = location_gateway.get_location_by_id(location_1_id)[
+    #     "location_name"
+    # ]
+    collect_weather_data_for_location(location_1_id, get_formatted_date())
+    # location_1_analyzed_weather = analyze_weather_data(location_1_weather)
 
-    location_2_id = request.form["location2"]
-    location_2_name = location_gateway.get_location_by_id(location_2_id)[
-        "location_name"
-    ]
-    location_2_weather = collect_weather_data_for_location(location_2_id)
-    location_2_analyzed_weather = analyze_weather_data(location_2_weather)
+    # location_2_id = request.form["location2"]
+    # location_2_name = location_gateway.get_location_by_id(location_2_id)[
+    #     "location_name"
+    # ]
+    # location_2_weather = collect_weather_data_for_location(location_2_id)
+    # location_2_analyzed_weather = analyze_weather_data(location_2_weather)
 
-    return render_template(
-        "weather-data.html",
-        location_1_name=location_1_name,
-        location_1_analyzed_weather=location_1_analyzed_weather,
-        location_2_name=location_2_name,
-        location_2_analyzed_weather=location_2_analyzed_weather,
-    )
+    print(sunshine_ratio_gateway.get_all_sunshine_ratio_data())
+    return sunshine_ratio_gateway.get_sunshine_ratio_data_by_location(location_1_id)
+    return location_1_id
+    # return render_template(
+    #     "weather-data.html",
+    #     location_1_name=location_1_name,
+    #     location_1_analyzed_weather=location_1_analyzed_weather,
+    #     # location_2_name=location_2_name,
+    #     # location_2_analyzed_weather=location_2_analyzed_weather,
+    # )
+
+
+def get_formatted_date():
+    """Get date of two days ago formatted as "YYYY-MM-DD" (API has delayed data)"""
+    return (datetime.today() - timedelta(days=2)).strftime("%Y-%m-%d")
 
 
 if __name__ == "__main__":

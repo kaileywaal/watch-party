@@ -30,6 +30,13 @@ class Weather(Base):
     daylight_duration = Column(Numeric(precision=10000, scale=2), nullable=False)
 
 
+class SunshineRatio(Base):
+    __tablename__ = "sunshine_ratio"
+    id = Column(Integer, primary_key=True)
+    weather_id = Column(Integer, ForeignKey("weather.id"), nullable=False)
+    sunshine_to_daylight_ratio = Column(Numeric(scale=2), nullable=False)
+
+
 def setup_schema():
     # Create tables
     Base.metadata.create_all(engine)

@@ -1,7 +1,9 @@
 import requests
 from components.LocationDataGateway import LocationDataGateway, Location
 from components.WeatherDataGateway import WeatherDataGateway
+from components.SunshineRatioDataGateway import SunshineRatioDataGateway
 from dotenv import load_dotenv
+from data_analyzer import analyze_weather_data
 import os
 
 
@@ -11,18 +13,25 @@ location_gateway = LocationDataGateway(os.getenv("DB_PATH"))
 weather_gateway = WeatherDataGateway(os.getenv("DB_PATH"))
 
 
-def collect_weather_data_for_location(location_id):
+START_DATE = "2024-01-01"
+
+
+def collect_weather_data_for_location(location_id, end_date):
     """Collect weather data from the API and store it in the database"""
 
     location: Location = location_gateway.get_location_by_id(location_id)
-    print("collecting data for " + location["location_name"])
+    print("Collecting data for " + location["location_name"])
 
     API_URL = (
         "https://archive-api.open-meteo.com/v1/archive?latitude="
         + str(location["latitude"])
         + "&longitude="
         + str(location["longitude"])
-        + "&start_date=2024-01-01&end_date=2024-04-08&daily=sunshine_duration,daylight_duration&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch"
+        + "&start_date="
+        + START_DATE
+        + "&end_date="
+        + end_date
+        + "&daily=sunshine_duration,daylight_duration&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch"
     )
 
     try:
@@ -38,6 +47,9 @@ def collect_weather_data_for_location(location_id):
                 date, sunshine_duration, location_id, daylight_duration
             )
 
+        ## TODO: Call data analyzer here - eventually using RabbitMQ
+        analyze_weather_data()
+
         return weather_gateway.get_weather_data_by_location(location_id)
     except Exception as e:
         print("Error collecting data:", e)
@@ -45,5 +57,3 @@ def collect_weather_data_for_location(location_id):
 
 if __name__ == "__main__":
     print("Collecting Data")
-    print(location_gateway.get_location_list())
-    print(weather_gateway.get_all_weather_data())

@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, Column, Integer, String, Numeric, ForeignKey
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
-from schema_setup import Weather
+from schema_setup import Weather, SunshineRatio
 
 
 Base = declarative_base()
@@ -73,6 +73,33 @@ class WeatherDataGateway:
                     "daylight_duration": item.daylight_duration,
                 }
                 for item in weather
+            ]
+        except Exception as e:
+            print("Error:", e)
+            self.session.rollback()
+            return None
+
+    def get_unprocessed_weather(self):
+        """Get weather items that have not yet been analyzed"""
+        try:
+            unprocessed_weather = (
+                self.session.query(Weather)
+                .outerjoin(SunshineRatio, SunshineRatio.weather_id == Weather.id)
+                .filter(
+                    SunshineRatio.id.is_(None)
+                )  # Filter for rows where SunshineRatio object is None
+                .all()
+            )
+
+            return [
+                {
+                    "id": item.id,
+                    "location_id": item.location_id,
+                    "date": item.date,
+                    "sunshine_duration": item.sunshine_duration,
+                    "daylight_duration": item.daylight_duration,
+                }
+                for item in unprocessed_weather
             ]
         except Exception as e:
             print("Error:", e)
