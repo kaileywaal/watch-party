@@ -15,8 +15,9 @@ class TestWeatherAnalyzer(unittest.TestCase):
         mock_sunshine_ratio_gateway = MagicMock()
 
         mock_weather_data = [
-            {"id": 1, "sunshine_duration": 0.4, "daylight_duration": 0.8},
-            {"id": 2, "sunshine_duration": 0, "daylight_duration": 0.7},
+            {"id": 1, "sunshine_duration": 25500, "daylight_duration": 34000},
+            {"id": 2, "sunshine_duration": 0, "daylight_duration": 34000},
+            {"id": 3, "sunshine_duration": 17000, "daylight_duration": 34000},
         ]
         mock_weather_gateway.get_unprocessed_weather.return_value = mock_weather_data
 
@@ -24,8 +25,9 @@ class TestWeatherAnalyzer(unittest.TestCase):
         analyzer.analyze_weather_data()
 
         # Ensure add_data method is called for each weather entry
-        mock_sunshine_ratio_gateway.add_data.assert_any_call(1, 0.5)
+        mock_sunshine_ratio_gateway.add_data.assert_any_call(1, 0.75)
         mock_sunshine_ratio_gateway.add_data.assert_any_call(2, 0.0)
+        mock_sunshine_ratio_gateway.add_data.assert_any_call(3, 0.5)
 
 
 if __name__ == "__main__":
