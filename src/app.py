@@ -2,7 +2,7 @@ from flask import Flask, request, render_template
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 import os
-from src.data_collector import collect_weather_data_for_location
+from src.data_collector import WeatherCollector
 from src.components.LocationDataGateway import LocationDataGateway
 from src.components.WeatherDataGateway import WeatherDataGateway
 from src.components.SunshineRatioDataGateway import SunshineRatioDataGateway
@@ -26,14 +26,17 @@ def get_data_for_location():
     location_1_id = request.form["location1"]
 
     # TODO: automate data collection apart from this request
-    collect_weather_data_for_location(location_1_id, get_formatted_date())
+    collector = WeatherCollector(
+        location_gateway, weather_gateway, "2024-01-01", get_formatted_date()
+    )
+    collector.collect_weather_data_for_location(location_1_id)
     location_1_analyzed_weather = (
         sunshine_ratio_gateway.get_sunshine_ratio_data_by_location(location_1_id)
     )
 
     location_2_id = request.form["location2"]
     # TODO: automate data collection apart from this request
-    collect_weather_data_for_location(location_2_id, get_formatted_date())
+    collector.collect_weather_data_for_location(location_2_id)
     location_2_analyzed_weather = (
         sunshine_ratio_gateway.get_sunshine_ratio_data_by_location(location_2_id)
     )
