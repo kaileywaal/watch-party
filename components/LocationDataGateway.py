@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
-from src.schema_setup import Location
+from applications.schema_setup import Location
 
 Base = declarative_base()
 

@@ -3,7 +3,7 @@ import unittest
 
 def run_tests():
     loader = unittest.TestLoader()
-    start_dir = "src/tests"
+    start_dir = "applications/tests"
     suite = loader.discover(start_dir)
     runner = unittest.TextTestRunner()
     result = runner.run(suite)

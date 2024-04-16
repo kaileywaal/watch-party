@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock, patch
 from datetime import datetime
-from src.data_collector import WeatherCollector
+from applications.data_collector import WeatherCollector
 
 
 class TestWeatherCollector(unittest.TestCase):

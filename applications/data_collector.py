@@ -2,10 +2,10 @@ import datetime
 import requests
 from dotenv import load_dotenv
 import os
-from src.components.LocationDataGateway import LocationDataGateway
-from src.components.WeatherDataGateway import WeatherDataGateway
-from src.data_analyzer import WeatherAnalyzer
-from src.components.SunshineRatioDataGateway import SunshineRatioDataGateway
+from components.LocationDataGateway import LocationDataGateway
+from components.WeatherDataGateway import WeatherDataGateway
+from applications.data_analyzer import WeatherAnalyzer
+from components.SunshineRatioDataGateway import SunshineRatioDataGateway
 
 
 load_dotenv()

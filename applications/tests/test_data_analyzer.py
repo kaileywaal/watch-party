@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import MagicMock
-from src.data_analyzer import WeatherAnalyzer
+from applications.data_analyzer import WeatherAnalyzer
 
 
 class TestWeatherAnalyzer(unittest.TestCase):
