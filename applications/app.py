@@ -37,7 +37,6 @@ def trigger_weather_collection():
 
 @app.route("/get-weather-data", methods=["POST"])
 def get_data_for_location():
-    trigger_weather_collection()
     location_1_id = request.form["location1"]
 
     location_1_analyzed_weather = (
@@ -62,4 +61,5 @@ def get_date_x_days_ago(days_ago):
 
 
 if __name__ == "__main__":
+    trigger_weather_collection()
     app.run(debug=True)
