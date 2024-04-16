@@ -27,14 +27,19 @@ def get_data_for_location():
 
     # TODO: automate data collection apart from this request
     collector = WeatherCollector(
-        location_gateway, weather_gateway, "2024-01-01", get_formatted_date()
+        location_gateway,
+        weather_gateway,
+        get_date_x_days_ago(90),
+        get_date_x_days_ago(2),
     )
+
     collector.collect_weather_data_for_location(location_1_id)
     location_1_analyzed_weather = (
         sunshine_ratio_gateway.get_sunshine_ratio_data_by_location(location_1_id)
     )
 
     location_2_id = request.form["location2"]
+
     # TODO: automate data collection apart from this request
     collector.collect_weather_data_for_location(location_2_id)
     location_2_analyzed_weather = (
@@ -48,9 +53,8 @@ def get_data_for_location():
     )
 
 
-def get_formatted_date():
-    """Get date of two days ago formatted as "YYYY-MM-DD" (API has delayed data)"""
-    return (datetime.today() - timedelta(days=2)).strftime("%Y-%m-%d")
+def get_date_x_days_ago(days_ago):
+    return datetime.today() - timedelta(days=days_ago)
 
 
 if __name__ == "__main__":

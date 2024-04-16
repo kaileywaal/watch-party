@@ -1,3 +1,4 @@
+import datetime
 import requests
 from dotenv import load_dotenv
 import os
@@ -10,11 +11,21 @@ load_dotenv()
 
 
 class WeatherCollector:
-    def __init__(self, location_gateway, weather_gateway, start_date, end_date):
+    def __init__(
+        self,
+        location_gateway: LocationDataGateway,
+        weather_gateway: WeatherDataGateway,
+        start_date: datetime,
+        end_date: datetime,
+    ):
         self.location_gateway = location_gateway
         self.weather_gateway = weather_gateway
         self.start_date = start_date
         self.end_date = end_date
+
+    @staticmethod
+    def format_date(date: datetime):
+        return date.strftime("%Y-%m-%d")
 
     def collect_weather_data_for_location(self, location_id):
         """Collect weather data from the API and store it in the database"""
@@ -50,20 +61,16 @@ class WeatherCollector:
             + "&longitude="
             + str(location["longitude"])
             + "&start_date="
-            + self.start_date
+            + self.format_date(self.start_date)
             + "&end_date="
-            + self.end_date
+            + self.format_date(self.end_date)
             + "&daily=sunshine_duration,daylight_duration&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch"
         )
-
-
-START_DATE = "2024-01-01"
-END_DATE = "2024-04-14"
 
 
 if __name__ == "__main__":
     location_gateway = LocationDataGateway(os.getenv("DB_PATH"))
     weather_gateway = WeatherDataGateway(os.getenv("DB_PATH"))
 
-    collector = WeatherCollector(location_gateway, weather_gateway, START_DATE)
+    # collector = WeatherCollector(location_gateway, weather_gateway)
     print("Collecting Data")

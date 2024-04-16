@@ -5,12 +5,6 @@ from src.components.WeatherDataGateway import WeatherDataGateway
 from src.components.SunshineRatioDataGateway import SunshineRatioDataGateway
 from src.components.WeatherDataGateway import WeatherDataGateway
 
-# Create an engine to connect to the SQLite databasex
-engine = create_engine(os.getenv("DB_PATH"))
-
-# Define a session to interact with the database
-Session = sessionmaker(bind=engine)
-session = Session()
 
 sunshine_ratio_gateway = SunshineRatioDataGateway(os.getenv("DB_PATH"))
 weather_gateway = WeatherDataGateway(os.getenv("DB_PATH"))
