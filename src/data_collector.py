@@ -2,9 +2,10 @@ import datetime
 import requests
 from dotenv import load_dotenv
 import os
-from src.components.LocationDataGateway import LocationDataGateway, Location
+from src.components.LocationDataGateway import LocationDataGateway
 from src.components.WeatherDataGateway import WeatherDataGateway
-from src.data_analyzer import analyze_weather_data
+from src.data_analyzer import WeatherAnalyzer
+from src.components.SunshineRatioDataGateway import SunshineRatioDataGateway
 
 
 load_dotenv()
@@ -13,8 +14,8 @@ load_dotenv()
 class WeatherCollector:
     def __init__(
         self,
-        location_gateway: LocationDataGateway,
-        weather_gateway: WeatherDataGateway,
+        location_gateway,
+        weather_gateway,
         start_date: datetime,
         end_date: datetime,
     ):
@@ -48,7 +49,10 @@ class WeatherCollector:
                 )
 
             ## TODO: Call data analyzer here - eventually using RabbitMQ
-            analyze_weather_data()
+            analyzer = WeatherAnalyzer(
+                self.weather_gateway, SunshineRatioDataGateway(os.getenv("DB_PATH"))
+            )
+            analyzer.analyze_weather_data()
 
             return self.weather_gateway.get_weather_data_by_location(location_id)
         except Exception as e:
@@ -69,8 +73,9 @@ class WeatherCollector:
 
 
 if __name__ == "__main__":
-    location_gateway = LocationDataGateway(os.getenv("DB_PATH"))
-    weather_gateway = WeatherDataGateway(os.getenv("DB_PATH"))
+    db_path = os.getenv("DB_PATH")
+    location_gateway = LocationDataGateway(db_path)
+    weather_gateway = WeatherDataGateway(db_path)
 
     # collector = WeatherCollector(location_gateway, weather_gateway)
     print("Collecting Data")

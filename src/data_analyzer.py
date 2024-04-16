@@ -1,28 +1,53 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 import os
 from src.components.WeatherDataGateway import WeatherDataGateway
 from src.components.SunshineRatioDataGateway import SunshineRatioDataGateway
 from src.components.WeatherDataGateway import WeatherDataGateway
 
 
-sunshine_ratio_gateway = SunshineRatioDataGateway(os.getenv("DB_PATH"))
-weather_gateway = WeatherDataGateway(os.getenv("DB_PATH"))
+class WeatherAnalyzer:
+    def __init__(self, weather_gateway, sunshine_ratio_gateway):
+        self.weather_gateway = weather_gateway
+        self.sunshine_ratio_gateway = sunshine_ratio_gateway
 
-
-def analyze_weather_data():
-    weather_data_without_sunshine_ratio = weather_gateway.get_unprocessed_weather()
-
-    for weather in weather_data_without_sunshine_ratio:
-        sunshine_ratio_gateway.add_data(
-            weather["id"], get_sunshine_to_daylight_ratio(weather)
+    def analyze_weather_data(self):
+        weather_data_without_sunshine_ratio = (
+            self.weather_gateway.get_unprocessed_weather()
         )
 
+        for weather in weather_data_without_sunshine_ratio:
+            sunshine_ratio = self.calculate_sunshine_to_daylight_ratio(weather)
+            self.sunshine_ratio_gateway.add_data(weather["id"], sunshine_ratio)
 
-def get_sunshine_to_daylight_ratio(weather):
-    return weather["sunshine_duration"] / weather["daylight_duration"]
+    def calculate_sunshine_to_daylight_ratio(self, weather):
+        return weather["sunshine_duration"] / weather["daylight_duration"]
+
+
+# sunshine_ratio_gateway = SunshineRatioDataGateway(os.getenv("DB_PATH"))
+# weather_gateway = WeatherDataGateway(os.getenv("DB_PATH"))
+
+
+# def analyze_weather_data():
+#     weather_data_without_sunshine_ratio = weather_gateway.get_unprocessed_weather()
+
+#     for weather in weather_data_without_sunshine_ratio:
+#         sunshine_ratio_gateway.add_data(
+#             weather["id"], get_sunshine_to_daylight_ratio(weather)
+#         )
+
+
+# def get_sunshine_to_daylight_ratio(weather):
+#     return weather["sunshine_duration"] / weather["daylight_duration"]
 
 
 if __name__ == "__main__":
+    from dotenv import load_dotenv
+
+    load_dotenv()
+
+    db_path = os.getenv("DB_PATH")
+    weather_gateway = WeatherDataGateway(db_path)
+    sunshine_ratio_gateway = SunshineRatioDataGateway(db_path)
+
+    analyzer = WeatherAnalyzer(weather_gateway, sunshine_ratio_gateway)
     print("Running analysis")
-    analyze_weather_data()
+    analyzer.analyze_weather_data()
