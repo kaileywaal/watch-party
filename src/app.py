@@ -18,30 +18,34 @@ sunshine_ratio_gateway = SunshineRatioDataGateway(os.getenv("DB_PATH"))
 
 @app.route("/")
 def main():
+    trigger_weather_collection()
     return render_template("index.html", locations=location_gateway.get_location_list())
 
 
-@app.route("/get-weather-data", methods=["POST"])
-def get_data_for_location():
-    location_1_id = request.form["location1"]
-
-    # TODO: automate data collection apart from this request
+# TODO: automate data collection apart from this request
+def trigger_weather_collection():
     collector = WeatherCollector(
         location_gateway,
         weather_gateway,
         get_date_x_days_ago(90),
         get_date_x_days_ago(2),
     )
+    collector.collect_weather_data_for_location(1)
+    collector.collect_weather_data_for_location(2)
+    collector.collect_weather_data_for_location(3)
+    collector.collect_weather_data_for_location(4)
 
-    collector.collect_weather_data_for_location(location_1_id)
+
+@app.route("/get-weather-data", methods=["POST"])
+def get_data_for_location():
+    location_1_id = request.form["location1"]
+
     location_1_analyzed_weather = (
         sunshine_ratio_gateway.get_sunshine_ratio_data_by_location(location_1_id)
     )
 
     location_2_id = request.form["location2"]
 
-    # TODO: automate data collection apart from this request
-    collector.collect_weather_data_for_location(location_2_id)
     location_2_analyzed_weather = (
         sunshine_ratio_gateway.get_sunshine_ratio_data_by_location(location_2_id)
     )
