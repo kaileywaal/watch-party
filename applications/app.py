@@ -18,7 +18,6 @@ sunshine_ratio_gateway = SunshineRatioDataGateway(os.getenv("DB_PATH"))
 
 @app.route("/")
 def main():
-    trigger_weather_collection()
     return render_template("index.html", locations=location_gateway.get_location_list())
 
 
@@ -38,6 +37,7 @@ def trigger_weather_collection():
 
 @app.route("/get-weather-data", methods=["POST"])
 def get_data_for_location():
+    trigger_weather_collection()
     location_1_id = request.form["location1"]
 
     location_1_analyzed_weather = (
