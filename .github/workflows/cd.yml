@@ -1,0 +1,29 @@
+name: CD
+
+on:
+    workflow_run:
+        workflows: ["CI"]
+        types:
+        - completed
+      
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Use Node.js 20
+            uses: actions/setup-node@v3
+            with:
+                node-version: "20"
+
+            - name: Checkout code
+            uses: actions/checkout@v3
+
+        
+            - name: Deploy to Render
+                uses: render-inc/render-deploy-action@v1
+                with:
+                renderToken: ${{ secrets.RENDER_TOKEN }}
+                githubToken: ${{ secrets.GITHUB_TOKEN }}
+                branch: main
+
