@@ -60,6 +60,11 @@ def get_date_x_days_ago(days_ago):
     return datetime.today() - timedelta(days=days_ago)
 
 
+@app.route("/health")
+def get_health_check():
+    return 200
+
+
 if __name__ == "__main__":
     trigger_weather_collection()
     app.run(debug=True)
