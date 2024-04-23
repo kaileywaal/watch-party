@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
-from applications.schema_setup import SunshineRatio, Weather, Location
+from schema_setup import SunshineRatio, Weather, Location
 
 
 Base = declarative_base()
