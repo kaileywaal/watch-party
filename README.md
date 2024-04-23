@@ -1,12 +1,32 @@
 # Weather Wars Application
 
-## Application Testing
+This application was built in response to regular conversations I have with various family members regarding the weather. Specifically, they don't agree with me when I tell them that it is SO cloudy where they live and SO much sunnier where I live (I'll let you guess who lives where based on the DATA 😜)
 
-This application was built for CSCA-5028 (Applications of Software Architecture for Big Data). The following is an explanation of what is included in the project, outlined according to the project rubric.
+(Was it spiteful to build an entire application just to prove a point?
+
+... No comment.)
+
+## Testing the Live Application
+
+You can view this application live [here](https://watch-party-96bl.onrender.com)
+
+(I'm aware that its not even remotely cute. It's an MVP!! [Here's an eyeball palette cleanser](https://kaileywaal.com/) if you need it.)
+
+## What it does
+
+The app collects data from several locations and stores this data in a SQLite database. Currently the location options are limited to locations where said family members live, though a future, less self-indulgent iteration could expand the locations available so it could actually be useful to other people 😉.
+
+It performs analysis on the weather data retrieved to answer a simple question: out of all possible hours that it _could_ be sunny (AKA when it is not night time), what percentage of the time is it ACTUALLY sunny?
+
+On the web, users can select two locations to compare. They will see historical data for both, with the "winner" for that particular day highlighted in green.
+
+## Application Features
+
+This application was built for CSCA-5028 (Applications of Software Architecture for Big Data). The following is an explanation of the project's features, outlined according to the project rubric.
 
 ### Web application basic form, reporting
 
-- Built in Flask. I chose Flask because it is a simple UI that does not require any dynamic interactions (in which case I would have used a JavaScript library). Since it is simply reporting on data that has already been collected and analyzed, a simple UI with Flask made the most sense.
+- Built in Flask.
 - Source code can be found in applications/web/app.py
 
 ### Data collection
@@ -53,9 +73,10 @@ This application was built for CSCA-5028 (Applications of Software Architecture 
 
 ### Continuous integration
 
-- Continuous integration using GitHub Actions, which is configured to run all tests on push.
-- You can view the results of these tests [here](https://github.com/kaileywaal/weather-wars/actions)
-- Configuration details can be found in .github/workflows/ci.yml
+- Continuous integration using GitHub Actions
+- Configured to run all tests on push.
+- You can view previous actions that have been triggered [here](https://github.com/kaileywaal/weather-wars/actions)
+- Configuration details can be found in .github/workflows/cicd.yml (continuous integration is the "test" step)
 
 ### Production monitoring instrumenting
 
@@ -64,4 +85,21 @@ This application was built for CSCA-5028 (Applications of Software Architecture 
 
 ### Event collaboration messaging
 
+Not yet implemented (TODO: ??)
+
 ### Continuous delivery
+
+- Continuous delivery using GitHub Actions
+- Configured to trigger deployment to Render using a secret deploy hook assuming all CI tests pass.
+- Configuration details can be found in .github/workflows/cicd.yml (continuous delivery is the "deploy" step)
+
+## Architecture + Design
+
+Justification for design decisions:
+
+1. SQLite database - in a real-world, high traffic application, I would have chosen a more robust database, but since this application will likely only be useful for me to prove a point I saw no need to add complexity here since SQLite can be hosted alongside my app.
+2. SQLAlchemy - with the above decision, if I did wish to expand this app beyond an MVP (you know, by adding other, less me-centric locations), I used SQLAlchemy to allow for easier database migrations since it decouples the database logic from the database itself.
+3. Flask - I chose Flask because it is a simple UI that does not require any dynamic interactions (in which case I would have used a JavaScript library). Since it is simply reporting on data that has already been collected and analyzed, a simple UI with Flask made the most sense - especially for speed!
+
+High level application architecture;
+TODO:
