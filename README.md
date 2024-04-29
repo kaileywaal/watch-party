@@ -10,7 +10,7 @@ This application was built in response to regular conversations I have with vari
 
 You can view this application live [here](https://watch-party-96bl.onrender.com)
 
-(I'm aware that its not even remotely close to being even remotely cute. It's an MVP!! [Here's an eyeball palette cleanser](https://kaileywaal.com/) if you need it.)
+(I'm aware that its not even remotely close to being even remotely cute. It's an MVP!! 
 
 ## What it does
 
@@ -19,6 +19,15 @@ The app collects data from several locations and stores this data in a SQLite da
 It performs analysis on the weather data retrieved to answer a simple question: out of all possible hours that it _could_ be sunny (AKA when it is not night time), what percentage of the time is it ACTUALLY sunny?
 
 On the web app, users can select two locations to compare. They will see historical data for both, with the "winner" for that particular day highlighted in green. (Hence "Weather **Wars**." This is serious stuff, people!!).
+
+## User Requirements Overview
+As a user:
+1. I should be able to select any two locations from the list to compare weather data.
+2. Upon selecting locations to compare, I should be able to easily see which location gets the most sun and therefore "wins" the weather war.
+3. Upon selecting locations to compare, I should be able to see the overall average percent of sun for each location.
+4. Upon selecting locations to compare, I should be able to see the percent of sun for each location by date.
+5. I should be able to easily distinguish which location "wins" the weather war by date.
+
 
 ## Application Features
 
@@ -85,7 +94,7 @@ This application was built for CSCA-5028 (Applications of Software Architecture 
 
 ### Event collaboration messaging
 
-Not yet implemented (TODO: ??)
+Not yet implemented
 
 ### Continuous delivery
 
@@ -112,7 +121,7 @@ flowchart LR
 
 (a) User calls "/trigger-data-collector" API endpoint\* to (b) trigger the data collector to collect weather data from the Weather API and (c) add it to the database. Once collection is complete, (d) the Data Collector lets the Data Analzer know that there is new data to analyze and (e) the Data Analyzer performs calculations and adds analyzed data to the database. (f) The user is then able to view the analyzed data in the user interface, which is (g) displaying data that is stored in the database.
 
-\*_Could easily turn this trigger into cron job, but I didn't want to pay for that 😛_
+\*_Could easily turn this into cron job, but I didn't want to pay for that 😛_
 
 ### Justification for Design Decisions
 
