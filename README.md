@@ -10,7 +10,7 @@ This application was built in response to regular conversations I have with vari
 
 You can view this application live [here](https://watch-party-96bl.onrender.com)
 
-(I'm aware that its not even remotely cute. It's an MVP!! [Here's an eyeball palette cleanser](https://kaileywaal.com/) if you need it.)
+(I'm aware that its not even remotely close to being even remotely cute. It's an MVP!! [Here's an eyeball palette cleanser](https://kaileywaal.com/) if you need it.)
 
 ## What it does
 
@@ -18,7 +18,7 @@ The app collects data from several locations and stores this data in a SQLite da
 
 It performs analysis on the weather data retrieved to answer a simple question: out of all possible hours that it _could_ be sunny (AKA when it is not night time), what percentage of the time is it ACTUALLY sunny?
 
-On the web, users can select two locations to compare. They will see historical data for both, with the "winner" for that particular day highlighted in green.
+On the web app, users can select two locations to compare. They will see historical data for both, with the "winner" for that particular day highlighted in green. (Hence "Weather **Wars**." This is serious stuff, people!!).
 
 ## Application Features
 
@@ -80,7 +80,7 @@ This application was built for CSCA-5028 (Applications of Software Architecture 
 
 ### Production monitoring instrumenting
 
-- `/health` endpoint returns 200 OK when application is healthy
+- `/health` endpoint returns 200 OK response when application is healthy.
 - Source found in applications/web/app.py
 
 ### Event collaboration messaging
@@ -95,11 +95,12 @@ Not yet implemented (TODO: ??)
 
 ## Architecture + Design
 
-Justification for design decisions:
+### Justification for design decisions:
 
 1. SQLite database - in a real-world, high traffic application, I would have chosen a more robust database, but since this application will likely only be useful for me to prove a point I saw no need to add complexity here since SQLite can be hosted alongside my app.
 2. SQLAlchemy - with the above decision, if I did wish to expand this app beyond an MVP (you know, by adding other, less me-centric locations), I used SQLAlchemy to allow for easier database migrations since it decouples the database logic from the database itself.
 3. Flask - I chose Flask because it is a simple UI that does not require any dynamic interactions (in which case I would have used a JavaScript library). Since it is simply reporting on data that has already been collected and analyzed, a simple UI with Flask made the most sense - especially for speed!
 
-High level application architecture;
+### High level application architecture;
+
 TODO:

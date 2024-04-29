@@ -21,20 +21,6 @@ def main():
     return render_template("index.html", locations=location_gateway.get_location_list())
 
 
-# TODO: automate data collection apart from this request
-def trigger_weather_collection():
-    collector = WeatherCollector(
-        location_gateway,
-        weather_gateway,
-        get_date_x_days_ago(90),
-        get_date_x_days_ago(2),
-    )
-    collector.collect_weather_data_for_location(1)
-    collector.collect_weather_data_for_location(2)
-    collector.collect_weather_data_for_location(3)
-    collector.collect_weather_data_for_location(4)
-
-
 @app.route("/get-weather-data", methods=["POST"])
 def get_data_for_location():
     location_1_id = request.form["location1"]
@@ -63,6 +49,22 @@ def get_date_x_days_ago(days_ago):
 @app.route("/health")
 def get_health_check():
     return "OK", 200
+
+
+@app.route("/trigger-data-collector")
+def trigger_weather_collection():
+    collector = WeatherCollector(
+        location_gateway,
+        weather_gateway,
+        get_date_x_days_ago(365),
+        get_date_x_days_ago(2),
+    )
+    collector.collect_weather_data_for_location(1)
+    collector.collect_weather_data_for_location(2)
+    collector.collect_weather_data_for_location(3)
+    collector.collect_weather_data_for_location(4)
+
+    return "Collected weather data!"
 
 
 if __name__ == "__main__":
