@@ -2,8 +2,9 @@
 
 {% block body %}
 
+
+    <p>Select two locations to compare.</p>
   <form action="/get-weather-data" method="post" id="location-form">
-      <label for="location">Select two locations to compare:</label>
       <select name="location1" id="location1">
           {% for location in locations %}
               <option value="{{ location.id }}">{{ location.location_name }}</option>
@@ -17,11 +18,5 @@
       <button type="submit">Submit</button>
   </form>
 
-{# 
-   <script>
-        function submitForm() {
-            document.getElementById("location-form").submit();
-        }
-    </script> #}
 
 {% endblock %}

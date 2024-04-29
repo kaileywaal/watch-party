@@ -1,6 +1,16 @@
 {% extends "layout.html" %}
 
 {% block body %}
+{% if location_1_average_sun > location_2_average_sun %}<h2>{{location_1_analyzed_weather[0].location_name}} Wins!</h2>{% endif %}
+{% if location_1_average_sun < location_2_average_sun %}<h2>{{location_2_analyzed_weather[0].location_name}} Wins!</h2>{% endif %}
+{% if location_1_average_sun == location_2_average_sun %}<h2>It's a tie!</h2>{% endif %}
+
+<p>Out of all possible hours of daylight, what percentage of that time is sunny?</p>
+
+    <h3 {% if location_1_average_sun > location_2_average_sun %}class="highlight"{% endif %}>
+    {{location_1_analyzed_weather[0].location_name}}: {{location_1_average_sun * 100}}%</h3>
+    <h3 {% if location_1_average_sun < location_2_average_sun %}class="highlight"{% endif %}>{{location_2_analyzed_weather[0].location_name}}: {{location_2_average_sun * 100}}%</h3>
+
  <table>
         <thead>
             <tr>

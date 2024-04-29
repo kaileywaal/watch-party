@@ -35,11 +35,23 @@ def get_data_for_location():
         sunshine_ratio_gateway.get_sunshine_ratio_data_by_location(location_2_id)
     )
 
+    location_1_average_sun = calculate_overall_average(location_1_analyzed_weather)
+    location_2_average_sun = calculate_overall_average(location_2_analyzed_weather)
+
     return render_template(
         "weather-data.html",
         location_1_analyzed_weather=location_1_analyzed_weather,
         location_2_analyzed_weather=location_2_analyzed_weather,
+        location_1_average_sun=location_1_average_sun,
+        location_2_average_sun=location_2_average_sun,
     )
+
+
+def calculate_overall_average(analyzed_weather_data):
+    average = sum(
+        weather["sunshine_to_daylight_ratio"] for weather in analyzed_weather_data
+    ) / len(analyzed_weather_data)
+    return round(average, 4)
 
 
 def get_date_x_days_ago(days_ago):
