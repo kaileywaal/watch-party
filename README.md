@@ -95,12 +95,27 @@ Not yet implemented (TODO: ??)
 
 ## Architecture + Design
 
-### Justification for design decisions:
+### High-Level Application Architecture
+
+```mermaid
+flowchart LR
+    User-->|f|UI["User Interface"]
+    User-->|a|DC["Data Collector"]
+    DC<-->|b|API["Weather API"]
+    DC-->|c|DB[(Database)]
+    DA["Data Analyzer"]-->|e|DB
+    DC-->|d|DA
+    UI-->|g|DB
+```
+
+#### Explanation of Interactions
+
+(a) User calls "/trigger-data-collector" API endpoint\* to (b) trigger the data collector to collect weather data from the Weather API and (c) add it to the database. Once collection is complete, (d) the Data Collector lets the Data Analzer know that there is new data to analyze and (e) the Data Analyzer performs calculations and adds analyzed data to the database. (f) The user is then able to view the analyzed data in the user interface, which is (g) displaying data that is stored in the database.
+
+\*_Could easily turn this trigger into cron job, but I didn't want to pay for that 😛_
+
+### Justification for Design Decisions
 
 1. SQLite database - in a real-world, high traffic application, I would have chosen a more robust database, but since this application will likely only be useful for me to prove a point I saw no need to add complexity here since SQLite can be hosted alongside my app.
 2. SQLAlchemy - with the above decision, if I did wish to expand this app beyond an MVP (you know, by adding other, less me-centric locations), I used SQLAlchemy to allow for easier database migrations since it decouples the database logic from the database itself.
 3. Flask - I chose Flask because it is a simple UI that does not require any dynamic interactions (in which case I would have used a JavaScript library). Since it is simply reporting on data that has already been collected and analyzed, a simple UI with Flask made the most sense - especially for speed!
-
-### High level application architecture;
-
-TODO:
